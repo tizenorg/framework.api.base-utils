@@ -49,8 +49,9 @@ int i18n_uset_create_pattern ( const i18n_uchar *pattern, int32_t pattern_length
     }
 
     *set = (i18n_uset_h)uset_openPattern(pattern, pattern_length, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
+
     return i18n_error;
 }
 
@@ -67,8 +68,8 @@ int i18n_uset_create_pattern_options ( const i18n_uchar *pattern, int32_t patter
     }
 
     *set = (i18n_uset_h)uset_openPatternOptions(pattern, pattern_length, options, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
     return i18n_error;
 }
 
@@ -86,7 +87,9 @@ int i18n_uset_clone ( const i18n_uset_h set, i18n_uset_h *set_clone )
     if (set == NULL || set_clone == NULL) {
         return I18N_ERROR_INVALID_PARAMETER;
     }
+
     *set_clone = (i18n_uset_h)uset_clone((const USet*)set);
+
     return I18N_ERROR_NONE;
 }
 
@@ -114,7 +117,9 @@ int i18n_uset_clone_as_thawed ( const i18n_uset_h set, i18n_uset_h *set_copy )
     if (set == NULL || set_copy == NULL) {
         return I18N_ERROR_INVALID_PARAMETER;
     }
+
     *set_copy = (i18n_uset_h)uset_cloneAsThawed((const USet*)set);
+
     return I18N_ERROR_NONE;
 }
 
@@ -146,8 +151,8 @@ int32_t i18n_uset_apply_pattern ( i18n_uset_h set, const i18n_uchar *pattern, in
     i18n_error_code_e i18n_error;
 
     int32_t result_uset_applyPattern = uset_applyPattern ((USet*)set, pattern, pattern_length, options, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
 
     set_last_result(i18n_error);
     return result_uset_applyPattern;
@@ -172,8 +177,8 @@ int i18n_uset_apply_int_property_value ( i18n_uset_h set, i18n_uchar_uproperty_e
     i18n_error_code_e i18n_error;
 
     uset_applyIntPropertyValue((USet *)set, prop, value, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
 
     return i18n_error;
 }
@@ -194,8 +199,8 @@ int i18n_uset_apply_property_alias ( i18n_uset_h set, const i18n_uchar *prop, in
     i18n_error_code_e i18n_error;
 
     uset_applyPropertyAlias ((USet*)set, prop, prop_length, value, value_length, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
 
     return i18n_error;
 
@@ -213,7 +218,7 @@ i18n_ubool i18n_uset_resembles_pattern ( const i18n_uchar *pattern, int32_t patt
 
 int32_t i18n_uset_to_pattern ( const i18n_uset_h set, i18n_uchar *result, int32_t result_capacity, i18n_ubool escape_unprintable )
 {
-    if (set == NULL || result_capacity < 0) {
+    if (set == NULL || result == NULL || result_capacity < 0) {
        set_last_result(I18N_ERROR_INVALID_PARAMETER);
        return 0;
     }
@@ -222,8 +227,8 @@ int32_t i18n_uset_to_pattern ( const i18n_uset_h set, i18n_uchar *result, int32_
     i18n_error_code_e i18n_error;
 
     int32_t result_uset_toPattern = uset_toPattern((const USet*)set, result, result_capacity, escape_unprintable, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
 
     set_last_result(i18n_error);
     return result_uset_toPattern;
@@ -491,8 +496,8 @@ int32_t i18n_uset_get_item ( const i18n_uset_h set, int32_t item_index, i18n_uch
     i18n_error_code_e i18n_error;
 
     int32_t result_uset_getItem = uset_getItem((const USet*)set, item_index, start, end, str, str_capacity, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
 
     set_last_result(i18n_error);
     return result_uset_getItem;
@@ -638,8 +643,8 @@ int32_t i18n_uset_serialize ( const i18n_uset_h set, uint16_t *dest, int32_t des
 
     UErrorCode icu_error = U_ZERO_ERROR;
     int32_t result_uset_serialize =  uset_serialize((const USet*)set, dest, dest_capacity, &icu_error);
-    ERR("Error code: %d", icu_error);
     ERR_MAPPING(icu_error, i18n_error);
+    I18N_ERR(i18n_error);
 
     set_last_result(i18n_error);
     return result_uset_serialize;
@@ -647,7 +652,7 @@ int32_t i18n_uset_serialize ( const i18n_uset_h set, uint16_t *dest, int32_t des
 
 i18n_ubool i18n_uset_get_serialized_set ( const uint16_t *src, int32_t src_length, i18n_userialized_set_s *fill_set )
 {
-    if (src == NULL || src_length < 0) {
+    if (src == NULL || src_length < 0 || fill_set == NULL) {
        set_last_result(I18N_ERROR_INVALID_PARAMETER);
        return 0;
     }
